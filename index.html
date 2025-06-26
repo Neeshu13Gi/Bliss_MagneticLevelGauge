@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Three.js - One Model with Controls</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      body {
+        margin: 0;
+        overflow: hidden;
+      }
+    </style>
+  </head>
+  <body>
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+          "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+        }
+      }
+    </script>
+
+    <script type="module">
+      import * as THREE from 'three';
+      import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+      import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+      import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
+
+      let scene, camera, renderer, controls;
+      let plane, model, dirLight, backgroundSphere;
+
+      init();
+
+      function init() {
+        scene = new THREE.Scene();
+
+        camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
+        camera.position.set(2, 2, 5);
+
+        renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.shadowMap.type = THREE.PCFShadowMap;
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFShadowMap;
+        document.body.appendChild(renderer.domElement);
+
+        controls = new OrbitControls(camera, renderer.domElement);
+        controls.target.set(0, 1, 0);
+        controls.minDistance = 2;
+        controls.maxDistance = 10;
+        controls.update();
+
+        // Background
+        const bgMaterial = new THREE.MeshStandardMaterial({ color: 0x808080, roughness: 0.5, side: THREE.BackSide });
+        backgroundSphere = new THREE.Mesh(new THREE.SphereGeometry(50, 64, 64), bgMaterial);
+        scene.add(backgroundSphere);
+
+        // Plane
+        plane = new THREE.Mesh(new THREE.PlaneGeometry(20, 20), new THREE.ShadowMaterial({ opacity: 0.25 }));
+        plane.rotation.x = -Math.PI / 2;
+        plane.receiveShadow = true;
+        plane.position.y = -0.1;
+        scene.add(plane);
+
+        scene.add(new THREE.HemisphereLight(0xffffff, 0x444444, 1.0));
+
+        dirLight = new THREE.DirectionalLight(0xffffff, 2);
+        dirLight.position.set(5, 10, 5);
+        dirLight.castShadow = true;
+        dirLight.shadow.mapSize.width = 1080;
+        dirLight.shadow.mapSize.height = 1080;
+        dirLight.shadow.camera.near = 0.5;
+        dirLight.shadow.camera.far = 20;
+        dirLight.shadow.camera.left = -10;
+        dirLight.shadow.camera.right = 10;
+        dirLight.shadow.camera.top = 10;
+        dirLight.shadow.camera.bottom = -10;
+        dirLight.shadow.bias = -0.0001;
+        dirLight.shadow.radius = 2;
+        scene.add(dirLight);
+
+       const hdrPath = 'textures/equirectangular/royal_esplanade_1k.hdr';
+const modelPath = 'models/Bliss_MagneticLevelGauge.glb';
+
+new RGBELoader().load(hdrPath, (texture) => {
+  texture.mapping = THREE.EquirectangularReflectionMapping;
+  scene.environment = texture;
+  scene.background = new THREE.Color(0x404040);
+
+  const loader = new GLTFLoader();
+  loader.load(modelPath,
+    (gltf) => {
+      model = gltf.scene;
+      model.traverse(child => {
+        if (child.isMesh) {
+          child.castShadow = true;
+          child.receiveShadow = true;
+        }
+      });
+      model.position.y = 0.1;
+      model.scale.set(0.5, 0.5, 0.5);
+      scene.add(model);
+      animate();
+    },
+    undefined,
+    (error) => console.error("Error loading model:", error)
+  );
+},
+undefined,
+(error) => console.error("Error loading HDR:", error));
+
+        window.addEventListener('resize', () => {
+          camera.aspect = window.innerWidth / window.innerHeight;
+          camera.updateProjectionMatrix();
+          renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+      }
+
+      function animate() {
+        requestAnimationFrame(animate);
+        if (model) {
+          model.rotation.y += 0.005;
+        }
+        renderer.render(scene, camera);
+      }
+    </script>
+  </body>
+</html>
