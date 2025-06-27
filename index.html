@@ -25,6 +25,7 @@
       import * as THREE from 'three';
       import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
       import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+      import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
       import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
 
       let scene, camera, renderer, controls;
@@ -41,7 +42,6 @@
         renderer = new THREE.WebGLRenderer({ antialias: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(window.devicePixelRatio);
-        renderer.shadowMap.type = THREE.PCFShadowMap;
         renderer.shadowMap.enabled = true;
         renderer.shadowMap.type = THREE.PCFShadowMap;
         document.body.appendChild(renderer.domElement);
@@ -81,35 +81,44 @@
         dirLight.shadow.radius = 2;
         scene.add(dirLight);
 
-       const hdrPath = 'textures/equirectangular/royal_esplanade_1k.hdr';
-const modelPath = 'models/Bliss_MagneticLevelGauge.glb';
+        const hdrPath = 'textures/equirectangular/royal_esplanade_1k.hdr';
+        const modelPath = 'models/Bliss_MagneticLevelGauge_Compressed.glb';
 
-new RGBELoader().load(hdrPath, (texture) => {
-  texture.mapping = THREE.EquirectangularReflectionMapping;
-  scene.environment = texture;
-  scene.background = new THREE.Color(0x404040);
+        new RGBELoader().load(hdrPath, (texture) => {
+          texture.mapping = THREE.EquirectangularReflectionMapping;
+          scene.environment = texture;
+          scene.background = new THREE.Color(0x404040);
 
-  const loader = new GLTFLoader();
-  loader.load(modelPath,
-    (gltf) => {
-      model = gltf.scene;
-      model.traverse(child => {
-        if (child.isMesh) {
-          child.castShadow = true;
-          child.receiveShadow = true;
-        }
-      });
-      model.position.y = -0.8;
-      model.scale.set(1, 1, 1);
-      scene.add(model);
-      animate();
-    },
-    undefined,
-    (error) => console.error("Error loading model:", error)
-  );
-},
-undefined,
-(error) => console.error("Error loading HDR:", error));
+          // Setup DRACOLoader
+          const dracoLoader = new DRACOLoader();
+          dracoLoader.setDecoderPath('https://www.gstatic.com/draco/v1/decoders/'); // Use hosted decoder
+
+          // Setup GLTFLoader with DRACOLoader
+          const loader = new GLTFLoader();
+          loader.setDRACOLoader(dracoLoader);
+
+          loader.load(
+            modelPath,
+            (gltf) => {
+              model = gltf.scene;
+              model.traverse(child => {
+                if (child.isMesh) {
+                  child.castShadow = true;
+                  child.receiveShadow = true;
+                }
+              });
+              model.position.y = -0.8;
+              model.scale.set(1, 1, 1);
+              scene.add(model);
+              animate();
+            },
+            undefined,
+            (error) => console.error("Error loading model:", error)
+          );
+        },
+        undefined,
+        (error) => console.error("Error loading HDR:", error)
+        );
 
         window.addEventListener('resize', () => {
           camera.aspect = window.innerWidth / window.innerHeight;
