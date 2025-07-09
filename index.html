@@ -224,17 +224,19 @@
             }
           });
 
-          model.position.y = -0.1;
+          
+          model.rotation.y = -45.2;
+          model.position.set(1, -0.2, 0);
           model.scale.set(0.7, 0.7, 0.7);
           scene.add(model);
 
           mixer = new THREE.AnimationMixer(model);
-          gltf.animations.forEach((clip, index) => {
-            const action = mixer.clipAction(clip);
-            animationActions.push(action);
-          });
-          playAnimation(0);
-          animate();
+         gltf.animations.forEach((clip, index) => {
+          const action = mixer.clipAction(clip);
+          animationActions.push(action);
+        });
+        animate(); // ✅ Only keep the animation loop running, but no clip plays
+
         });
       });
 
