@@ -1,139 +1,270 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <title>Bliss_MagneticLevelGauge</title>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <style>
-      body {
-        margin: 0;
-        overflow: hidden;
+<head>
+  <title>Magnetic level gauges</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #051430;
+    }
+
+    nav {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      height: 40px;
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      z-index: 100;
+    }
+
+    .logo {
+      color: #ffffff;
+      font-weight: bold;
+      font-size: 18px;
+      letter-spacing: 1px;
+    }
+
+    .product-info {
+      position: absolute;
+      top: 60px;
+      left: 30px;
+      background: rgba(0, 0, 0, 0.5);
+      color: #ffffff;
+      padding: 20px 25px;
+      border-radius: 12px;
+      z-index: 10;
+      max-width: 320px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      animation: slideFadeIn 1s ease-out;
+    }
+
+    .product-info h1 {
+      font-size: 24px;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      color: #00bfff;
+    }
+
+    .product-info ul {
+      padding-left: 20px;
+      margin: 0;
+    }
+
+    .product-info li {
+      margin-bottom: 8px;
+      font-size: 15px;
+      line-height: 1.4;
+    }
+
+    .categories {
+      position: absolute;
+      bottom: 30px;
+      left: 30px;
+      display: flex;
+      gap: 15px;
+      z-index: 10;
+    }
+
+    .category-card {
+      background: #ffffff;
+      padding: 12px 18px;
+      border-radius: 10px;
+      font-weight: bold;
+      font-size: 15px;
+      cursor: pointer;
+      transition: transform 0.2s ease, background 0.2s;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    }
+
+    .category-card:hover {
+      transform: scale(1.05);
+      background: #f1f1f1;
+      animation: bounce 0.4s ease;
+      box-shadow: 0 4px 12px rgba(255, 255, 255, 0.3);
+    }
+
+    .category-card.level { border-left: 5px solid #007BFF; }
+    .category-card.plug  { border-left: 5px solid #28A745; }
+    .category-card.ball  { border-left: 5px solid #FF9800; }
+
+    @keyframes slideFadeIn {
+      0% { opacity: 0; transform: translateY(-20px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-4px); }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Nav -->
+  <nav>
+    <div class="logo">Magnetic level gauges</div>
+  </nav>
+
+  <!-- Product Info Section -->
+  <div class="product-info">
+    <h1>MAGNETIC LEVEL GAUGE</h1>
+    <ul>
+    <li>Visible level indication up to 150 feet away</li>
+    <li>No contact between liquid and indicator glass</li>
+    <li>Suitable for high-pressure, high-temperature, and corrosive media</li>
+    <li>Compliant with ASME B31.1/B31.3 and PED 97/23 standards</li>
+    <li>Supports magnetostrictive and radar transmitters for non-invasive monitoring</li>
+    <li>Standard float failure indication ensures operational safety</li>
+    <li>Constructed with corrosion-resistant SS316 or as per spec</li>
+    <li>360° magnetic coupling for continuous and accurate reading</li>
+    <li>Fully corrosion-resistant system for harsh environments</li>
+  </ul>
+  </div>
+
+  <!-- Category Buttons -->
+  <div class="categories">
+    <div class="category-card level">Animation_01</div>
+    <div class="category-card plug">Animation_02</div>
+    <div class="category-card ball">Animation_03</div>
+  </div>
+
+  <!-- Three.js Import Map -->
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
       }
-    </style>
-  </head>
-  <body>
-    <script type="importmap">
-      {
-        "imports": {
-          "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
-          "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
-        }
-      }
-    </script>
+    }
+  </script>
 
-    <script type="module">
-      import * as THREE from 'three';
-      import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-      import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-      import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
-      import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
+  <!-- Three.js Script -->
+  <script type="module">
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+    import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+    import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
 
-      let scene, camera, renderer, controls;
-      let plane, model, dirLight, backgroundSphere;
+    let scene, camera, renderer, controls;
+    let model, mixer;
+    const animationActions = [];
+    let activeAction;
+    const clock = new THREE.Clock();
 
-      init();
+    init();
 
-      function init() {
-        scene = new THREE.Scene();
+    function init() {
+      scene = new THREE.Scene();
 
-        camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
-        camera.position.set(2, 2, 5);
+      camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
+      camera.position.set(2, 2, 5);
 
-        renderer = new THREE.WebGLRenderer({ antialias: true });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(window.devicePixelRatio);
-        renderer.shadowMap.enabled = true;
-        renderer.shadowMap.type = THREE.PCFShadowMap;
-        document.body.appendChild(renderer.domElement);
+      renderer = new THREE.WebGLRenderer({ antialias: true });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setPixelRatio(window.devicePixelRatio);
+      renderer.shadowMap.enabled = true;
+      renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+      document.body.appendChild(renderer.domElement);
 
-        controls = new OrbitControls(camera, renderer.domElement);
-        controls.target.set(0, 1, 0);
-        controls.minDistance = 2;
-        controls.maxDistance = 10;
-        controls.update();
+      controls = new OrbitControls(camera, renderer.domElement);
+      controls.target.set(0, 1, 0);
+      controls.minDistance = 2.5;
+      controls.maxDistance = 9;
+      controls.update();
 
-        // Background
-        const bgMaterial = new THREE.MeshStandardMaterial({ color: 0x808080, roughness: 0.5, side: THREE.BackSide });
-        backgroundSphere = new THREE.Mesh(new THREE.SphereGeometry(50, 64, 64), bgMaterial);
-        scene.add(backgroundSphere);
+      // Lighting & Environment
+      const backgroundSphere = new THREE.Mesh(
+        new THREE.SphereGeometry(50, 64, 64),
+        new THREE.MeshStandardMaterial({ color: 0x101f35, roughness: 0.5, side: THREE.BackSide })
+      );
+      scene.add(backgroundSphere);
 
-        // Plane
-        plane = new THREE.Mesh(new THREE.PlaneGeometry(20, 20), new THREE.ShadowMaterial({ opacity: 0.25 }));
-        plane.rotation.x = -Math.PI / 2;
-        plane.receiveShadow = true;
-        plane.position.y = -0.9;
-        scene.add(plane);
+      const plane = new THREE.Mesh(
+        new THREE.PlaneGeometry(20, 20),
+        new THREE.ShadowMaterial({ opacity: 0.25 })
+      );
+      plane.rotation.x = -Math.PI / 2;
+      plane.receiveShadow = true;
+      plane.position.y = -0.3;
+      scene.add(plane);
 
-        scene.add(new THREE.HemisphereLight(0xffffff, 0x444444, 1.0));
+      scene.add(new THREE.HemisphereLight(0xffffff, 0x444444, 1));
 
-        dirLight = new THREE.DirectionalLight(0xffffff, 2);
-        dirLight.position.set(5, 10, 5);
-        dirLight.castShadow = true;
-        dirLight.shadow.mapSize.width = 1080;
-        dirLight.shadow.mapSize.height = 1080;
-        dirLight.shadow.camera.near = 0.5;
-        dirLight.shadow.camera.far = 20;
-        dirLight.shadow.camera.left = -10;
-        dirLight.shadow.camera.right = 10;
-        dirLight.shadow.camera.top = 10;
-        dirLight.shadow.camera.bottom = -10;
-        dirLight.shadow.bias = -0.0001;
-        dirLight.shadow.radius = 2;
-        scene.add(dirLight);
+      const dirLight = new THREE.DirectionalLight(0xffffff, 0.5);
+      dirLight.position.set(5, 10, 5);
+      dirLight.castShadow = true;
+      dirLight.shadow.mapSize.set(1024, 1024);
+      scene.add(dirLight);
 
-        const hdrPath = 'textures/equirectangular/royal_esplanade_1k.hdr';
-        const modelPath = 'models/Bliss_MagneticLevelGauge_Compressed.glb';
+      // Load Environment & Model
+      const hdrPath = 'textures/equirectangular/royal_esplanade_1k.hdr';
+      const modelPath = 'models/Magnetic level gauges.glb';
 
-        new RGBELoader().load(hdrPath, (texture) => {
-          texture.mapping = THREE.EquirectangularReflectionMapping;
-          scene.environment = texture;
-          scene.background = new THREE.Color(0x404040);
+      new RGBELoader().load(hdrPath, (texture) => {
+        texture.mapping = THREE.EquirectangularReflectionMapping;
+        scene.environment = texture;
+        scene.background = new THREE.Color(0x0b1629);
 
-          // Setup DRACOLoader
-          const dracoLoader = new DRACOLoader();
-          dracoLoader.setDecoderPath('https://www.gstatic.com/draco/v1/decoders/'); // Use hosted decoder
+        const loader = new GLTFLoader();
+        loader.load(modelPath, (gltf) => {
+          model = gltf.scene;
+          model.traverse(child => {
+            if (child.isMesh) {
+              child.castShadow = true;
+              child.receiveShadow = true;
+            }
+          });
 
-          // Setup GLTFLoader with DRACOLoader
-          const loader = new GLTFLoader();
-          loader.setDRACOLoader(dracoLoader);
+          model.position.y = -0.1;
+          model.scale.set(0.7, 0.7, 0.7);
+          scene.add(model);
 
-          loader.load(
-            modelPath,
-            (gltf) => {
-              model = gltf.scene;
-              model.traverse(child => {
-                if (child.isMesh) {
-                  child.castShadow = true;
-                  child.receiveShadow = true;
-                }
-              });
-              model.position.y = -0.8;
-              model.scale.set(1, 1, 1);
-              scene.add(model);
-              animate();
-            },
-            undefined,
-            (error) => console.error("Error loading model:", error)
-          );
-        },
-        undefined,
-        (error) => console.error("Error loading HDR:", error)
-        );
-
-        window.addEventListener('resize', () => {
-          camera.aspect = window.innerWidth / window.innerHeight;
-          camera.updateProjectionMatrix();
-          renderer.setSize(window.innerWidth, window.innerHeight);
+          mixer = new THREE.AnimationMixer(model);
+          gltf.animations.forEach((clip, index) => {
+            const action = mixer.clipAction(clip);
+            animationActions.push(action);
+          });
+          playAnimation(0);
+          animate();
         });
-      }
+      });
 
-      function animate() {
-        requestAnimationFrame(animate);
-        if (model) {
-          model.rotation.y += 0.005;
-        }
-        renderer.render(scene, camera);
-      }
-    </script>
-  </body>
+      window.addEventListener('resize', () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+      });
+    }
+
+    function playAnimation(index) {
+      if (!animationActions[index]) return;
+      if (activeAction) activeAction.stop();
+      activeAction = animationActions[index];
+      activeAction.reset().play();
+    }
+
+    function animate() {
+      requestAnimationFrame(animate);
+      const delta = clock.getDelta();
+      if (mixer) mixer.update(delta);
+      renderer.render(scene, camera);
+    }
+
+    // Button Click Events
+    window.addEventListener('DOMContentLoaded', () => {
+      document.querySelector('.category-card.level')?.addEventListener('click', () => playAnimation(0));
+      document.querySelector('.category-card.plug')?.addEventListener('click', () => playAnimation(1));
+      document.querySelector('.category-card.ball')?.addEventListener('click', () => playAnimation(2));
+    });
+  </script>
+</body>
 </html>
