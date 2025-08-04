@@ -210,7 +210,9 @@
   <nav>
     <div class="logo">Magnetic level gauge</div>
   </nav>
-
+<div id="loading" style="color:white; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%)">
+  Loading model...
+</div>
   <!-- Product Info Section -->
   <div class="product-info">
     <h1>MAGNETIC LEVEL GAUGE</h1>
@@ -314,6 +316,7 @@
 
         const loader = new GLTFLoader();
         loader.load(modelPath, (gltf) => {
+            document.getElementById('loading').style.display = 'none';
           model = gltf.scene;
           model.traverse(child => {
             if (child.isMesh) {
