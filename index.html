@@ -1,44 +1,46 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <title>Magnetic level gauge</title>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
- <style>
-  html, body {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    font-family: 'Segoe UI', sans-serif;
-    background-color: #051430;
-  }
+  <style>
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #333;
+    }
 
-  canvas {
-    display: block;
-  }
+    canvas {
+      display: block;
+    }
 
-  nav {
-    position: fixed;
-    top: 0;
-    width: 100%;
-    height: 40px;
-    background: rgba(255, 255, 255, 0.08);
-    backdrop-filter: blur(8px);
-    display: flex;
-    align-items: center;
-    padding: 0 20px;
-    z-index: 100;
-  }
+    nav {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      height: 40px;
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      z-index: 100;
+    }
 
-  .logo {
-    color: #ffffff;
-    font-weight: bold;
-    font-size: 18px;
-    letter-spacing: 1px;
-  }
+    .logo {
+      color: #ffffff;
+      font-weight: bold;
+      font-size: 18px;
+      letter-spacing: 1px;
+    }
 
   .product-info {
     position: absolute;
@@ -72,137 +74,187 @@
     font-size: 15px;
     line-height: 1.4;
   }
-.categories {
-  position: absolute;
-  bottom: 10px;
-  left: 0;
-  right: 0;
-  padding: 0 15px;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  gap: 12px;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  z-index: 10;
-}
 
-.category-card {
-  background: #ffffff;
-  padding: 12px 18px;
-  border-radius: 10px;
-  font-weight: bold;
-  font-size: clamp(12px, 2vw, 16px);
-  cursor: pointer;
-  transition: transform 0.2s ease, background 0.2s;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-  min-width: 110px;
-  text-align: center;
-  flex: 0 0 auto;
-  white-space: nowrap;
-}
+    .categories {
+      position: absolute;
+      bottom: 10px;
+      left: 0;
+      right: 0;
+      padding: 0 15px;
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      gap: 12px;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      z-index: 10;
+    }
 
-  .category-card:hover {
-    transform: scale(1.05);
-    background: #f1f1f1;
-    animation: bounce 0.4s ease;
-    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.3);
-  }
+    .category-card {
+      background: #ffffff;
+      padding: 12px 18px;
+      border-radius: 10px;
+      font-weight: bold;
+      font-size: clamp(12px, 2vw, 16px);
+      cursor: pointer;
+      transition: transform 0.2s ease, background 0.2s;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+      min-width: 110px;
+      text-align: center;
+      flex: 0 0 auto;
+      white-space: nowrap;
+    }
 
-  .category-card.level { border-left: 5px solid #007BFF; }
-  .category-card.plug  { border-left: 5px solid #28A745; }
-  .category-card.ball  { border-left: 5px solid #FF9800; }
+    .category-card:hover {
+      transform: scale(1.05);
+      background: #f1f1f1;
+      animation: bounce 0.4s ease;
+      box-shadow: 0 4px 12px rgba(255, 255, 255, 0.3);
+    }
 
-  @keyframes slideFadeIn {
-    0% { opacity: 0; transform: translateY(-20px); }
-    100% { opacity: 1; transform: translateY(0); }
-  }
+    .category-card.level {
+      border-left: 5px solid #007BFF;
+    }
 
-  @keyframes bounce {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-4px); }
-  }
+    .category-card.plug {
+      border-left: 5px solid #28A745;
+    }
 
-  @media (max-width: 768px) {
-    .product-info {
+    .category-card.ball {
+      border-left: 5px solid #FF9800;
+    }
+
+    @keyframes slideFadeIn {
+      0% {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes bounce {
+
+      0%,
+      100% {
+        transform: translateY(0);
+      }
+
+      50% {
+        transform: translateY(-4px);
+      }
+    }
+
+    @media (max-width: 768px) {
+     .product-info {
       max-width: 100%;
       font-size: 14px;
       padding: 15px;
     }
 
-    .category-card {
-      flex: 1 1 45%;
-      font-size: 14px;
-    }
-  }
-
-  @media (max-width: 480px) {
-    .category-card {
-      flex: 1 1 100%;
-    }
-  }
-
-  @media (orientation: landscape) and (max-height: 500px) {
-    .product-info {
-      top: 45px;
-      padding: 10px;
+      .category-card {
+        flex: 1 1 45%;
+        font-size: 14px;
+      }
     }
 
-    .category-card {
-      font-size: 13px;
-      padding: 10px 14px;
+    @media (max-width: 480px) {
+      .category-card {
+        flex: 1 1 100%;
+      }
     }
-  }
-@media (max-width: 500px) {
-  .categories {
-    flex-wrap: wrap;
-    justify-content: center;
-    padding: 10px;
-    gap: 10px;
-  }
 
-  .category-card {
-    flex: 1 1 auto;
+    @media (orientation: landscape) and (max-height: 500px) {
+      .product-info {
+    padding: 5px;
     font-size: 14px;
-    padding: 10px 14px;
-    min-width: 100px;
-    max-width: 150px; /* Limit max width */
-    text-align: center;
+    top: 94px;
   }
-}
+      .category-card {
+        font-size: 13px;
+        padding: 10px 14px;
+      }
+    }
+
+    @media (max-width: 500px) {
+      .categories {
+        flex-wrap: wrap;
+        justify-content: center;
+        padding: 10px;
+        gap: 10px;
+      }
+
+      .category-card {
+        flex: 1 1 auto;
+        font-size: 14px;
+        padding: 10px 14px;
+        min-width: 100px;
+        max-width: 150px;
+        /* Limit max width */
+        text-align: center;
+      }
+    }
 
 
-  .info-toggle-btn {
-  position: fixed;
-  top: 50px;
-  left: 15px; /* Changed from right: 15px */
-  z-index: 9999;
-  padding: 10px 18px;
-  background-color: #ffffff;
-  color: #051430;
-  border: none;
-  border-radius: 8px;
-  font-size: clamp(14px, 2vw, 16px);
-  font-weight: bold;
-  cursor: pointer;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-}
+    .info-toggle-btn {
+      position: fixed;
+      top: 50px;
+      left: 15px;
+      /* Changed from right: 15px */
+      z-index: 9999;
+      padding: 10px 18px;
+      background-color: #ffffff;
+      color: #051430;
+      border: none;
+      border-radius: 8px;
+      font-size: clamp(14px, 2vw, 16px);
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    }
+
 
 
 .product-info {
-  display: none; /* Hidden by default */
-  background-color: #fff;
+  position: absolute;
+    top: 97px;
+    left: 16px;
+  right: 20px;
+  background-color: rgba(255, 255, 255, 0.304);
   color: #000;
   padding: 20px;
   border-radius: 12px;
-  max-width: 90%;
-  margin: 70px auto 0;
+  max-width: 500px;
+ 
   font-size: clamp(14px, 2vw, 16px);
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  z-index: 10;
+  display: none; /* hidden by default, toggled by JS */
+  animation: slideFadeIn 0.6s ease-out;
 }
 
+.product-info h1 {
+      margin-top: 0px;
+  font-size: clamp(20px, 3vw, 26px);
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  color: #00bfff;
+}
 
-</style>
+.product-info ul {
+  padding-left: 20px;
+  margin: 0;
+}
+
+.product-info li {
+  margin-bottom: 8px;
+  font-size: clamp(14px, 2vw, 15px);
+  line-height: 1.5;
+}
+  </style>
 </head>
 
 <body>
@@ -210,23 +262,23 @@
   <nav>
     <div class="logo">Magnetic level gauge</div>
   </nav>
-<div id="loading" style="color:white; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%)">
-  Loading model...
-</div>
+  <div id="loading" style="color:white; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%)">
+    Loading model...
+  </div>
   <!-- Product Info Section -->
   <div class="product-info">
     <h1>MAGNETIC LEVEL GAUGE</h1>
     <ul>
-    <li>Visible level indication up to 150 feet away</li>
-    <li>No contact between liquid and indicator glass</li>
-    <li>Suitable for high-pressure, high-temperature, and corrosive media</li>
-    <li>Compliant with ASME B31.1/B31.3 and PED 97/23 standards</li>
-    <li>Supports magnetostrictive and radar transmitters for non-invasive monitoring</li>
-    <li>Standard float failure indication ensures operational safety</li>
-    <li>Constructed with corrosion-resistant SS316 or as per spec</li>
-    <li>360° magnetic coupling for continuous and accurate reading</li>
-    <li>Fully corrosion-resistant system for harsh environments</li>
-  </ul>
+      <li>Visible level indication up to 150 feet away</li>
+      <li>No contact between liquid and indicator glass</li>
+      <li>Suitable for high-pressure, high-temperature, and corrosive media</li>
+      <li>Compliant with ASME B31.1/B31.3 and PED 97/23 standards</li>
+      <li>Supports magnetostrictive and radar transmitters for non-invasive monitoring</li>
+      <li>Standard float failure indication ensures operational safety</li>
+      <li>Constructed with corrosion-resistant SS316 or as per spec</li>
+      <li>360° magnetic coupling for continuous and accurate reading</li>
+      <li>Fully corrosion-resistant system for harsh environments</li>
+    </ul>
   </div>
 
   <!-- Category Buttons -->
@@ -236,7 +288,7 @@
     <div class="category-card ball">Animation_03</div>
   </div>
 
-<button id="infoToggleBtn" class="info-toggle-btn">Show Product Info</button>
+  <button id="infoToggleBtn" class="info-toggle-btn">Show Product Info</button>
   <!-- Three.js Import Map -->
   <script type="importmap">
     {
@@ -253,6 +305,8 @@
     import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
     import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
+    import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
+
 
     let scene, camera, renderer, controls;
     let model, mixer;
@@ -284,7 +338,7 @@
       // Lighting & Environment
       const backgroundSphere = new THREE.Mesh(
         new THREE.SphereGeometry(50, 64, 64),
-        new THREE.MeshStandardMaterial({ color: 0x101f35, roughness: 0.5, side: THREE.BackSide })
+        new THREE.MeshStandardMaterial({ color: 0x333333, roughness: 0.5, side: THREE.BackSide })
       );
       scene.add(backgroundSphere);
 
@@ -303,20 +357,24 @@
       dirLight.position.set(5, 10, 5);
       dirLight.castShadow = true;
       dirLight.shadow.mapSize.set(1024, 1024);
-      scene.add(dirLight);
+      // scene.add(dirLight);
 
-      // Load Environment & Model
+      // // Load Environment & Model
       const hdrPath = 'textures/equirectangular/royal_esplanade_1k.hdr';
-      const modelPath = 'models/Magnetic level gauges.glb';
+      const modelPath = 'models/Magnetic level gauges_updated.glb';
 
       new RGBELoader().load(hdrPath, (texture) => {
         texture.mapping = THREE.EquirectangularReflectionMapping;
         scene.environment = texture;
-        scene.background = new THREE.Color(0x0b1629);
+        scene.background = new THREE.Color(0xD9D9D9);
+        const dracoLoader = new DRACOLoader();
+        dracoLoader.setDecoderPath('https://www.gstatic.com/draco/v1/decoders/');
 
         const loader = new GLTFLoader();
+        loader.setDRACOLoader(dracoLoader);
+
         loader.load(modelPath, (gltf) => {
-            document.getElementById('loading').style.display = 'none';
+          document.getElementById('loading').style.display = 'none';
           model = gltf.scene;
           model.traverse(child => {
             if (child.isMesh) {
@@ -325,20 +383,19 @@
             }
           });
 
-          
           model.rotation.y = -45.2;
           model.position.set(1, -0.2, 0);
           model.scale.set(0.7, 0.7, 0.7);
           scene.add(model);
 
           mixer = new THREE.AnimationMixer(model);
-         gltf.animations.forEach((clip, index) => {
-          const action = mixer.clipAction(clip);
-          animationActions.push(action);
-        });
-          
-        
-        animate(); // ✅ Only keep the animation loop running, but no clip plays
+          gltf.animations.forEach((clip, index) => {
+            const action = mixer.clipAction(clip);
+            animationActions.push(action);
+          });
+
+
+          animate(); // ✅ Only keep the animation loop running, but no clip plays
 
         });
       });
@@ -347,7 +404,7 @@
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
         renderer.setSize(window.innerWidth, window.innerHeight);
-         updateModelForScreenSize();
+        //  updateModelForScreenSize();
       });
     }
 
@@ -372,14 +429,15 @@
       document.querySelector('.category-card.ball')?.addEventListener('click', () => playAnimation(2));
     });
 
-      const toggleBtn = document.getElementById('infoToggleBtn');
-  const productInfo = document.querySelector('.product-info');
+    const toggleBtn = document.getElementById('infoToggleBtn');
+    const productInfo = document.querySelector('.product-info');
 
-  toggleBtn.addEventListener('click', () => {
-    const isVisible = productInfo.style.display === 'block';
-    productInfo.style.display = isVisible ? 'none' : 'block';
-    toggleBtn.textContent = isVisible ? 'Show Product Info' : 'Hide Product Info';
-  });
+    toggleBtn.addEventListener('click', () => {
+      const isVisible = productInfo.style.display === 'block';
+      productInfo.style.display = isVisible ? 'none' : 'block';
+      toggleBtn.textContent = isVisible ? 'Show Product Info' : 'Hide Product Info';
+    });
   </script>
 </body>
+
 </html>
