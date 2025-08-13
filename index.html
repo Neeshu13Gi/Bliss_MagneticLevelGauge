@@ -15,7 +15,7 @@
       height: 100%;
       overflow: hidden;
       font-family: 'Segoe UI', sans-serif;
-      background-color: #333;
+      background-color: #64B5F6;
     }
 
     canvas {
@@ -241,7 +241,7 @@
   font-size: clamp(20px, 3vw, 26px);
   margin-bottom: 12px;
   text-transform: uppercase;
-  color: #00bfff;
+  color: #000000;
 }
 
 .product-info ul {
@@ -306,7 +306,7 @@
     import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
     import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
     import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
-
+    import { gsap } from 'https://cdn.jsdelivr.net/npm/gsap@3.12.5/index.js';
 
     let scene, camera, renderer, controls;
     let model, mixer;
@@ -322,11 +322,12 @@
       camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
       camera.position.set(2, 2, 5);
 
-      renderer = new THREE.WebGLRenderer({ antialias: true });
+      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
       renderer.setSize(window.innerWidth, window.innerHeight);
       renderer.setPixelRatio(window.devicePixelRatio);
       renderer.shadowMap.enabled = true;
       renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+      renderer.domElement.style.opacity = 0; // Start invisible
       document.body.appendChild(renderer.domElement);
 
       controls = new OrbitControls(camera, renderer.domElement);
@@ -338,28 +339,43 @@
       // Lighting & Environment
       const backgroundSphere = new THREE.Mesh(
         new THREE.SphereGeometry(50, 64, 64),
-        new THREE.MeshStandardMaterial({ color: 0x333333, roughness: 0.5, side: THREE.BackSide })
+        new THREE.MeshStandardMaterial({
+          color: '#64B5F6',
+          roughness: 0.5,
+          metalness: 0.5,
+          side: THREE.BackSide,
+          emissive: '#64B5F6',
+          emissiveIntensity: 0.2
+        })
       );
       scene.add(backgroundSphere);
 
       const plane = new THREE.Mesh(
-        new THREE.PlaneGeometry(20, 20),
-        new THREE.ShadowMaterial({ opacity: 0.25 })
-      );
+      new THREE.PlaneGeometry(20, 20),
+      new THREE.ShadowMaterial({ opacity: 0.2 }) // More visible shadows
+    );
       plane.rotation.x = -Math.PI / 2;
-      plane.receiveShadow = true;
-      plane.position.y = -0.3;
-      scene.add(plane);
+    plane.position.y = -0.1;
+    plane.receiveShadow = true;
+    scene.add(plane);
+    
 
       scene.add(new THREE.HemisphereLight(0xffffff, 0x444444, 1));
 
-      const dirLight = new THREE.DirectionalLight(0xffffff, 0.5);
-      dirLight.position.set(5, 10, 5);
-      dirLight.castShadow = true;
-      dirLight.shadow.mapSize.set(1024, 1024);
-      // scene.add(dirLight);
-
-      // // Load Environment & Model
+   const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+    dirLight.position.set(5, 10, 5);
+    dirLight.castShadow = true;
+    dirLight.shadow.mapSize.width = 2048;
+    dirLight.shadow.mapSize.height = 2048;
+    dirLight.shadow.camera.near = 0.5;
+    dirLight.shadow.camera.far = 50;
+    dirLight.shadow.camera.left = -10;
+    dirLight.shadow.camera.right = 10;
+    dirLight.shadow.camera.top = 10;
+    dirLight.shadow.camera.bottom = -10;
+    scene.add(dirLight);
+    scene.add(dirLight.target); 
+          // Load Environment & Model
       const hdrPath = 'textures/equirectangular/royal_esplanade_1k.hdr';
       const modelPath = 'models/Magnetic level gauges_updated.glb';
 
@@ -367,6 +383,7 @@
         texture.mapping = THREE.EquirectangularReflectionMapping;
         scene.environment = texture;
         scene.background = new THREE.Color(0xD9D9D9);
+
         const dracoLoader = new DRACOLoader();
         dracoLoader.setDecoderPath('https://www.gstatic.com/draco/v1/decoders/');
 
@@ -380,6 +397,10 @@
             if (child.isMesh) {
               child.castShadow = true;
               child.receiveShadow = true;
+              if (child.material) {
+                child.material.transparent = true;
+                child.material.opacity = 0; // start invisible
+              }
             }
           });
 
@@ -389,14 +410,20 @@
           scene.add(model);
 
           mixer = new THREE.AnimationMixer(model);
-          gltf.animations.forEach((clip, index) => {
+          gltf.animations.forEach((clip) => {
             const action = mixer.clipAction(clip);
             animationActions.push(action);
           });
 
+          // Fade in renderer & model
+          gsap.to(renderer.domElement.style, { opacity: 1, duration: 1.5 });
+          model.traverse(child => {
+            if (child.isMesh && child.material) {
+              gsap.to(child.material, { opacity: 1, duration: 1.5 });
+            }
+          });
 
-          animate(); // ✅ Only keep the animation loop running, but no clip plays
-
+          animate();
         });
       });
 
@@ -404,7 +431,6 @@
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
         renderer.setSize(window.innerWidth, window.innerHeight);
-        //  updateModelForScreenSize();
       });
     }
 
@@ -437,7 +463,8 @@
       productInfo.style.display = isVisible ? 'none' : 'block';
       toggleBtn.textContent = isVisible ? 'Show Product Info' : 'Hide Product Info';
     });
-  </script>
+</script>
+
 </body>
 
 </html>
