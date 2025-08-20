@@ -355,7 +355,7 @@
       new THREE.ShadowMaterial({ opacity: 0.2 }) // More visible shadows
     );
       plane.rotation.x = -Math.PI / 2;
-    plane.position.y = -0.1;
+    plane.position.y = -0.3;
     plane.receiveShadow = true;
     scene.add(plane);
     
@@ -377,7 +377,7 @@
     scene.add(dirLight.target); 
           // Load Environment & Model
       const hdrPath = 'textures/equirectangular/royal_esplanade_1k.hdr';
-      const modelPath = 'models/Magnetic level gauges_updated.glb';
+      const modelPath = 'models/Magnetic level gauges.compressed.glb';
 
       new RGBELoader().load(hdrPath, (texture) => {
         texture.mapping = THREE.EquirectangularReflectionMapping;
@@ -405,15 +405,22 @@
           });
 
           model.rotation.y = -45.2;
-          model.position.set(1, -0.2, 0);
+          model.position.set(1, -0.3, 0);
           model.scale.set(0.7, 0.7, 0.7);
           scene.add(model);
+mixer = new THREE.AnimationMixer(model);
+gltf.animations.forEach((clip, i) => {
+  const action = mixer.clipAction(clip);
 
-          mixer = new THREE.AnimationMixer(model);
-          gltf.animations.forEach((clip) => {
-            const action = mixer.clipAction(clip);
-            animationActions.push(action);
-          });
+  // ✅ Animation_02 (index 1) should not loop
+  if (i === 1) {
+    action.setLoop(THREE.LoopOnce, 1);
+    action.clampWhenFinished = true; // stays on last frame
+  }
+
+  animationActions.push(action);
+});
+
 
           // Fade in renderer & model
           gsap.to(renderer.domElement.style, { opacity: 1, duration: 1.5 });
